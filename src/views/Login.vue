@@ -1,6 +1,12 @@
 <template>
     <div class="login container box max">
         <h1 class="title">Prisijungti</h1>
+        <Notification
+            v-if="notification"
+            v-on:close="notification = false"
+            :type="type"
+            :message="Message"
+        />
         <form>
             <div class="field">
                 <label for="email" class="label">Elektroninis paštas</label>
@@ -20,7 +26,7 @@
                 <div class="control">
                     <input
                         class="input"
-                        type="text"
+                        type="password"
                         name="password"
                         id="password"
                         placeholder="ananasas123"
@@ -40,13 +46,38 @@
 </template>
 
 <script>
+import firebase from "firebase/app";
+import "firebase/auth";
+import Notification from "../components/Notification";
+
 export default {
-    name: "login",
+    name: "Login",
+    components: { Notification },
     data() {
         return {
             email: "",
             password: "",
+            notification: false,
+            Message: "",
+            loading: false,
         };
+    },
+    methods: {
+        login() {
+            this.loading = true;
+            firebase
+                .auth()
+                .signInWithEmailAndPassword(this.email, this.password)
+                .then(
+                    () => this.$router.push("/"),
+                    (error) => {
+                        this.notification = true;
+                        this.type = "is-danger";
+                        this.Message = error.message;
+                        this.loading = false;
+                    }
+                );
+        },
     },
 };
 </script>
