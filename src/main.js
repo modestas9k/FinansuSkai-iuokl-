@@ -1,9 +1,9 @@
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
+import "./servers/firebase";
 import "normalize.css";
 import "bulma/css/bulma.min.css";
-import "./servers/firebase";
 
 Vue.config.productionTip = false;
 
