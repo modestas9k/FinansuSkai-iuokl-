@@ -1,18 +1,14 @@
 <template>
-    <div id="app">
-        <Navigation />
-        <section class="section">
-            <div class="container">
-                <router-view />
-            </div>
-        </section>
-    </div>
+  <div id="app">
+    <Navigation />
+    <router-view />
+  </div>
 </template>
 <script>
 import Navigation from "./components/Navigation";
 export default {
-    name: "app",
-    components: { Navigation },
+  name: "app",
+  components: { Navigation },
 };
 </script>
 

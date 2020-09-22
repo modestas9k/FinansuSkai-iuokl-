@@ -35,10 +35,10 @@
               v-if="loggedIn"
               v-on:click="logout()"
               class="button is-danger is-outlined"
-            >Logout</button>
+            >Atsijungti</button>
             <span v-else>
-              <router-link to="/register" class="button is-primary">Register</router-link>
-              <router-link to="/login" class="button is-light">Login</router-link>
+              <router-link to="/register" class="button is-primary">Registruotis</router-link>
+              <router-link to="/login" class="button is-light">Prisijungti</router-link>
             </span>
           </div>
         </div>
@@ -58,7 +58,7 @@ export default {
       email: "",
       links: [
         { name: "Namai", url: "/" },
-        { name: "About", url: "/about" },
+        { name: "Finansai", url: "/finanse" },
       ],
     };
   },
