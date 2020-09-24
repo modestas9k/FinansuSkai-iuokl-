@@ -34,10 +34,39 @@ const routes = [
         },
     },
     {
-        path: "/finanse",
+        path: "/finance",
         name: "Finansai",
         component: () =>
-            import(/* webpackChunkName: "about" */ "../views/finanse.vue"),
+            import(/* webpackChunkName: "about" */ "../views/Finance.vue"),
+        meta: {
+            requiresAuth: true,
+        },
+    },
+    {
+        path: "/addProduct",
+        name: "AddProduct",
+        component: () =>
+            import(/* webpackChunkName: "about" */ "../views/AddProduct.vue"),
+        meta: {
+            requiresAuth: true,
+        },
+    },
+    {
+        path: "/product/:type/:id",
+        name: "Produktas",
+        component: () =>
+            import(/* webpackChunkName: "about" */ "../views/Product.vue"),
+        meta: {
+            requiresAuth: true,
+        },
+    },
+    {
+        path: "/product/:type/:id/add",
+        name: "addProductItems",
+        component: () =>
+            import(
+                /* webpackChunkName: "about" */ "../views/AddProductItems.vue"
+            ),
         meta: {
             requiresAuth: true,
         },
