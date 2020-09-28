@@ -1,65 +1,156 @@
 <template>
     <div class="finance">
         <Header />
-        <div class="section">
-            <div class="container">
+        <div class="section ">
+            <div class="container cont-wide">
                 <div class="buttons">
-                    <router-link to="/AddProduct" class="button is-primary">
+                    <router-link
+                        to="/AddProduct"
+                        class="button is-primary is-rounded"
+                    >
                         Pridėti nauja sritį
                     </router-link>
                 </div>
-                <table class="table is-hoverable is-fullwidth">
-                    <thead>
-                        <tr>
-                            <th>Pajamos</th>
-                            <th>Suma</th>
-                            <th>Kiekis</th>
-                            <th>Vidutinė kaina</th>
-                            <th>Data</th>
-                            <th>Išsamiau</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="list in pajamos" :key="list.id">
-                            <td>{{ list.pavadinimas }}</td>
-                            <td>{{ `${list.suma} €` }}</td>
-                            <td>{{ list.bendrasKiekis }}</td>
-                            <td>{{ `${list.vidutineKaina} €` }}</td>
-                            <td>{{ list.firstLastData }}</td>
+                <div class="box">
+                    <div class="columns is-mobile">
+                        <div class="column is-1"></div>
+                        <h2 class="title mt-4 mb-2">Pajamos</h2>
+                    </div>
 
-                            <td>
-                                <router-link
-                                    :to="`/product/pajamos/${list.id}`"
-                                >
-                                    <button class="button is-success">+</button>
-                                </router-link>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Išlaidos</th>
-                            <th>Suma</th>
-                            <th>Kiekis</th>
-                            <th>Vidutinė kaina</th>
-                            <th>Data</th>
-                            <th>Išsamiau</th>
-                        </tr>
-                        <tr v-for="list in islaidos" :key="list.id">
-                            <td>{{ list.pavadinimas }}</td>
-                            <td>{{ `${suma(irasai)} €` }}</td>
-                            <td>{{ kiekis(irasai) }}</td>
-                            <td>{{ `${vidurkis(irasai)} €` }}</td>
-                            <td>{{ firstLastData(irasai) }}</td>
+                    <div
+                        class="columns has-text-centered is-vcentered is-mobile mb-0 mt-1"
+                    >
+                        <!-- <div class="column is-1"></div> -->
+                        <div class="column border">
+                            <h5 class="has-text-weight-bold ">
+                                Produktas
+                            </h5>
+                        </div>
+                        <div class="column border">
+                            <h5 class="has-text-weight-bold">Suma</h5>
+                        </div>
+                        <div class="column border">
+                            <h5 class="has-text-weight-bold">
+                                Kiekis
+                            </h5>
+                        </div>
+                    </div>
+                    <!-- <div class="line"></div> -->
+                    <div
+                        class="columns has-text-centered is-hoverable is-mobile mb-1 mt-1 is-vcentered"
+                        v-for="list in pajamos"
+                        :key="list.id"
+                    >
+                        <!-- <router-link :to="`/product/pajamos/${list.id}`"> -->
+                        <div class="column">
+                            <h5 class="subtitle">
+                                {{ list.pavadinimas }}
+                            </h5>
+                        </div>
+                        <div class="column">
+                            <h5 class="subtitle">
+                                {{ `${suma(list.irasai)} €` }}
+                            </h5>
+                        </div>
+                        <div class="column">
+                            <h5 class="subtitle">
+                                {{ `${kiekis(list.irasai)}` }}
+                            </h5>
+                        </div>
+                        <!-- </router-link> -->
+                    </div>
+                    <div class="columns has-text-centered is-mobile mt-2 mb-1">
+                        <!-- <div class="column is-1"></div> -->
+                        <div class="column border-top">
+                            <h5 class="subtitle has-text-weight-bold">
+                                Viso:
+                            </h5>
+                        </div>
+                        <div class="column border-top">
+                            <h5 class="subtitle has-text-weight-bold">
+                                {{ `${visoSuma(pajamos)} €` }}
+                            </h5>
+                        </div>
+                        <div class="column border-top">
+                            <h5 class="subtitle has-text-weight-bold">
+                                {{ `${visoKiekis(pajamos)}` }}
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="columns is-mobile">
+                        <div class="column is-1"></div>
+                        <h2 class="title mt-4 mb-2">Išlaidos</h2>
+                    </div>
 
-                            <td>
-                                <router-link
-                                    :to="`/product/islaidos/${list.id}`"
-                                >
-                                    <button class="button is-success">+</button>
-                                </router-link>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                    <div
+                        class="columns has-text-centered is-vcentered is-mobile mb-0 mt-1"
+                    >
+                        <div class="column is-1"></div>
+                        <div class="column border">
+                            <h5 class="has-text-weight-bold ">
+                                Produktas
+                            </h5>
+                        </div>
+                        <div class="column border">
+                            <h5 class="has-text-weight-bold">Suma</h5>
+                        </div>
+                        <div class="column border">
+                            <h5 class="has-text-weight-bold">
+                                Kiekis
+                            </h5>
+                        </div>
+                    </div>
+                    <!-- <div class="line"></div> -->
+                    <div
+                        class="columns has-text-centered is-mobile mb-1 mt-1 is-vcentered"
+                        v-for="list in islaidos"
+                        :key="list.id"
+                    >
+                        <div class="column  is-1">
+                            <router-link
+                                :to="`/product/islaidos/${list.id}`"
+                                class="button round is-success "
+                            >
+                                +
+                            </router-link>
+                        </div>
+                        <div class="column">
+                            <h5 class="subtitle">
+                                {{ list.pavadinimas }}
+                            </h5>
+                        </div>
+                        <div class="column">
+                            <h5 class="subtitle">
+                                {{ `${suma(list.irasai)} €` }}
+                            </h5>
+                        </div>
+                        <div class="column">
+                            <h5 class="subtitle">
+                                {{ `${kiekis(list.irasai)}` }}
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="columns has-text-centered is-mobile mt-2 mb-1">
+                        <div class="column is-1"></div>
+                        <div class="column border-top">
+                            <h5 class="subtitle has-text-weight-bold">
+                                Viso:
+                            </h5>
+                        </div>
+                        <div class="column border-top">
+                            <h5 class="subtitle has-text-weight-bold">
+                                {{ `${visoSuma(islaidos)} €` }}
+                            </h5>
+                        </div>
+                        <div class="column border-top">
+                            <h5 class="subtitle has-text-weight-bold">
+                                {{ `${visoKiekis(islaidos)}` }}
+                            </h5>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -76,10 +167,33 @@ export default {
         return {
             pajamos: [],
             islaidos: [],
-            irasai: [],
         };
     },
     methods: {
+        visoSuma(array) {
+            let total = 0;
+            array.forEach((data) => {
+                let answer = 0;
+                data.irasai.forEach((obj) => {
+                    answer += obj.kiekis * obj.kaina;
+                });
+                total += answer;
+            });
+            return total;
+        },
+
+        visoKiekis(array) {
+            let total = 0;
+            array.forEach((data) => {
+                let answer = 0;
+                data.irasai.forEach((obj) => {
+                    answer += obj.kiekis;
+                });
+                total += answer;
+            });
+            return total;
+        },
+
         suma(array) {
             let answer = 0;
             array.forEach((obj) => {
@@ -87,6 +201,7 @@ export default {
             });
             return answer;
         },
+
         kiekis(array) {
             let answer = 0;
             array.forEach((obj) => {
@@ -94,6 +209,7 @@ export default {
             });
             return answer;
         },
+
         firstLastData(array) {
             if (array.length != 0) {
                 let first = array[0].data;
@@ -102,6 +218,7 @@ export default {
                 return first + " / " + last;
             }
         },
+
         vidurkis(array) {
             let number = 0;
             let spliter = 0;
@@ -122,12 +239,27 @@ export default {
             .get()
             .then((snapshot) =>
                 snapshot.docs.forEach((fDoc) => {
-                    this.pajamos.push({
-                        id: fDoc.id,
-                        pavadinimas: fDoc.data().pavadinimas,
-                        komentaras: fDoc.data().komentaras,
-                        uid: fDoc.data().uid,
-                    });
+                    firebase
+                        .firestore()
+                        .collection("pajamos")
+                        .doc(fDoc.id)
+                        .collection("irasai")
+                        .get()
+                        .then((doc) => {
+                            let irasai = [];
+                            doc.docs.forEach((prod) => {
+                                irasai.push({
+                                    kiekis: Number(prod.data().kiekis),
+                                    kaina: Number(prod.data().kaina),
+                                });
+                            });
+                            this.pajamos.push({
+                                id: fDoc.id,
+                                pavadinimas: fDoc.data().pavadinimas,
+                                irasai: irasai,
+                                uid: fDoc.data().uid,
+                            });
+                        });
                 })
             );
 
@@ -138,13 +270,6 @@ export default {
             .get()
             .then((snapshot) => {
                 snapshot.docs.forEach((fDoc) => {
-                    this.islaidos.push({
-                        id: fDoc.id,
-                        pavadinimas: fDoc.data().pavadinimas,
-                        komentaras: fDoc.data().komentaras,
-                        uid: fDoc.data().uid,
-                    });
-
                     firebase
                         .firestore()
                         .collection("islaidos")
@@ -152,13 +277,18 @@ export default {
                         .collection("irasai")
                         .get()
                         .then((doc) => {
+                            let irasai = [];
                             doc.docs.forEach((prod) => {
-                                this.irasai.push({
-                                    id: prod.id,
+                                irasai.push({
                                     kiekis: Number(prod.data().kiekis),
                                     kaina: Number(prod.data().kaina),
-                                    data: prod.data().data,
                                 });
+                            });
+                            this.islaidos.push({
+                                id: fDoc.id,
+                                pavadinimas: fDoc.data().pavadinimas,
+                                irasai: irasai,
+                                uid: fDoc.data().uid,
                             });
                         });
                 });
@@ -167,4 +297,31 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.line {
+    border: 1px solid rgb(197, 197, 197);
+}
+.round {
+    border-radius: 50%;
+    font-size: small;
+    font-weight: 900;
+}
+.border {
+    border-bottom: 2px solid rgb(197, 197, 197);
+    border-top: 2px solid rgb(197, 197, 197);
+}
+.border-top {
+    border-top: 2px solid rgb(197, 197, 197);
+}
+.cont-wide {
+    max-width: 650px;
+}
+/* .section {
+    padding: 0;
+} */
+@media (max-width: 672px) {
+    :root {
+        font-size: 90%;
+    }
+}
+</style>
