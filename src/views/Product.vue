@@ -257,6 +257,9 @@ export default {
                 .doc(id)
                 .delete()
                 .then(() => {
+                    this.irasai = this.irasai.filter(
+                        (irasas) => irasas.id !== id
+                    );
                     console.log("Document successfully deleted!");
                 })
                 .catch((error) => {
