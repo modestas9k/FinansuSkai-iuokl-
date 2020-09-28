@@ -173,7 +173,7 @@
                         </div>
                         <div class="column is-2">
                             <button
-                                class="button is-danger  is-small is-round"
+                                class="button is-danger  is-small is-rounded"
                                 v-on:click="deleteStoryItem(list.id)"
                             >
                                 <span class="icon">
