@@ -268,7 +268,7 @@ export default {
                 .firestore()
                 .collection(this.$route.params.type)
                 .doc(this.$route.params.id)
-                .set({
+                .update({
                     komentaras: this.produktas.komentaras,
                 })
                 .then(() => {
