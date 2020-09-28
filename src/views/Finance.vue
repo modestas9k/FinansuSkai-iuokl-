@@ -20,7 +20,6 @@
                     <div
                         class="columns has-text-centered is-vcentered is-mobile mb-0 mt-1"
                     >
-                        <!-- <div class="column is-1"></div> -->
                         <div class="column border">
                             <h5 class="has-text-weight-bold ">
                                 Produktas
@@ -35,13 +34,12 @@
                             </h5>
                         </div>
                     </div>
-                    <!-- <div class="line"></div> -->
-                    <div
+                    <router-link
+                        :to="`/product/pajamos/${list.id}`"
                         class="columns has-text-centered is-hoverable is-mobile mb-1 mt-1 is-vcentered"
                         v-for="list in pajamos"
                         :key="list.id"
                     >
-                        <!-- <router-link :to="`/product/pajamos/${list.id}`"> -->
                         <div class="column">
                             <h5 class="subtitle">
                                 {{ list.pavadinimas }}
@@ -57,10 +55,8 @@
                                 {{ `${kiekis(list.irasai)}` }}
                             </h5>
                         </div>
-                        <!-- </router-link> -->
-                    </div>
+                    </router-link>
                     <div class="columns has-text-centered is-mobile mt-2 mb-1">
-                        <!-- <div class="column is-1"></div> -->
                         <div class="column border-top">
                             <h5 class="subtitle has-text-weight-bold">
                                 Viso:
@@ -83,11 +79,9 @@
                         <div class="column is-1"></div>
                         <h2 class="title mt-4 mb-2">Išlaidos</h2>
                     </div>
-
                     <div
                         class="columns has-text-centered is-vcentered is-mobile mb-0 mt-1"
                     >
-                        <div class="column is-1"></div>
                         <div class="column border">
                             <h5 class="has-text-weight-bold ">
                                 Produktas
@@ -102,20 +96,20 @@
                             </h5>
                         </div>
                     </div>
-                    <!-- <div class="line"></div> -->
-                    <div
+                    <router-link
+                        :to="`/product/islaidos/${list.id}`"
                         class="columns has-text-centered is-mobile mb-1 mt-1 is-vcentered"
                         v-for="list in islaidos"
                         :key="list.id"
                     >
-                        <div class="column  is-1">
+                        <!-- <div class="column  is-1">
                             <router-link
                                 :to="`/product/islaidos/${list.id}`"
                                 class="button round is-success "
                             >
                                 +
                             </router-link>
-                        </div>
+                        </div> -->
                         <div class="column">
                             <h5 class="subtitle">
                                 {{ list.pavadinimas }}
@@ -131,9 +125,8 @@
                                 {{ `${kiekis(list.irasai)}` }}
                             </h5>
                         </div>
-                    </div>
+                    </router-link>
                     <div class="columns has-text-centered is-mobile mt-2 mb-1">
-                        <div class="column is-1"></div>
                         <div class="column border-top">
                             <h5 class="subtitle has-text-weight-bold">
                                 Viso:
