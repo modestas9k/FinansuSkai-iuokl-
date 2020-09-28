@@ -1,50 +1,28 @@
 <template>
-  <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-      <router-link class="navbar-item" to="/">
-        <h1 class="title">Finansu skaičiuoklė</h1>
-      </router-link>
-
-      <a
-        role="button"
-        class="navbar-burger burger"
-        aria-label="menu"
-        aria-expanded="false"
-        data-target="navbarBasicExample"
-      >
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </a>
-    </div>
-
-    <div id="navbarBasicExample" class="navbar-menu">
-      <div class="navbar-start" v-if="loggedIn">
-        <router-link
-          v-for="link in links"
-          :key="link.name"
-          :to="link.url"
-          class="navbar-item"
-        >{{ link.name }}</router-link>
-      </div>
-
-      <div class="navbar-end">
-        <div class="navbar-item">
-          <div class="buttons">
-            <button
-              v-if="loggedIn"
-              v-on:click="logout()"
-              class="button is-danger is-outlined"
-            >Atsijungti</button>
-            <span v-else>
-              <router-link to="/register" class="button is-primary">Registruotis</router-link>
-              <router-link to="/login" class="button is-light">Prisijungti</router-link>
-            </span>
-          </div>
+    <nav
+        class="navbar is-dark is-mobile"
+        role="navigation"
+        aria-label="main navigation"
+    >
+        <div class="navbar-brand max-width">
+            <router-link class="navbar-item" to="/finance">
+                <h1 class="title">Finansų skaičiuoklė</h1>
+            </router-link>
         </div>
-      </div>
-    </div>
-  </nav>
+        <div class="navbar-end max-width">
+            <div class="navbar-item">
+                <div class="buttons">
+                    <button
+                        v-if="loggedIn"
+                        v-on:click="logout()"
+                        class="button is-danger is-outlined is-rounded"
+                    >
+                        Atsijungti
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
 </template>
 
 <script>
@@ -52,36 +30,39 @@ import firebase from "firebase/app";
 import "firebase/auth";
 
 export default {
-  data() {
-    return {
-      loggedIn: false,
-      email: "",
-      links: [
-        { name: "Namai", url: "/" },
-        { name: "Finansai", url: "/finanse" },
-      ],
-    };
-  },
-  methods: {
-    logout() {
-      this.loggedIn = false;
-      firebase.auth().signOut();
+    data() {
+        return {
+            loggedIn: false,
+            email: "",
+            links: [
+                { name: "Namai", url: "/" },
+                { name: "Finansai", url: "/finance" },
+            ],
+        };
     },
-  },
-  beforeMount() {
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.loggedIn = true;
-        this.email = firebase.auth().currentUser.email;
-      }
-    });
-  },
+    methods: {
+        logout() {
+            this.loggedIn = false;
+            firebase.auth().signOut();
+        },
+    },
+    beforeMount() {
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                this.loggedIn = true;
+                this.email = firebase.auth().currentUser.email;
+            }
+        });
+    },
 };
 </script>
 
 <style scoped>
 .title {
-  color: white;
-  font-size: 1.5em;
+    color: white;
+    font-size: 1.5em;
+}
+.max-width {
+    max-width: 400px;
 }
 </style>

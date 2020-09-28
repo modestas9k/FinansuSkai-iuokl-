@@ -1,7 +1,7 @@
 <template>
     <div class="add">
         <div class="section">
-            <div class="container">
+            <div class="container cont-wide">
                 <form v-on:submit.prevent="add" class="box">
                     <h1 class="title is-2">Pridėti nauja sritį</h1>
                     <Notification
@@ -10,16 +10,6 @@
                         :type="type"
                         :message="Message"
                     />
-                    <div class="buttons is-right">
-                        <div class="control">
-                            <router-link
-                                to="/finance"
-                                class="button is-primary is-outlined"
-                            >
-                                Atgal
-                            </router-link>
-                        </div>
-                    </div>
 
                     <div class="field">
                         <label class="label" for="pavadinimas">
@@ -43,7 +33,7 @@
                                     type="radio"
                                     name="answer"
                                     value="pajamos"
-                                    v-model="collection"
+                                    v-model="type"
                                 />
                                 Pajamos
                             </label>
@@ -52,7 +42,7 @@
                                     type="radio"
                                     name="answer"
                                     value="islaidos"
-                                    v-model="collection"
+                                    v-model="type"
                                 />
                                 Išlaidos
                             </label>
@@ -71,7 +61,7 @@
                         </div>
                     </div>
 
-                    <div class="field">
+                    <div class="field is-grouped">
                         <div class="control">
                             <button
                                 class="button is-primary"
@@ -80,6 +70,14 @@
                             >
                                 Pridėti
                             </button>
+                        </div>
+                        <div class="control">
+                            <router-link
+                                to="/finance"
+                                class="button is-primary is-outlined"
+                            >
+                                Atgal
+                            </router-link>
                         </div>
                     </div>
                 </form>
@@ -104,7 +102,7 @@ export default {
             notification: false,
             Message: "",
             loading: false,
-            collection: "",
+            type: "",
         };
     },
     methods: {
@@ -112,18 +110,15 @@ export default {
             this.loading = true;
             firebase
                 .firestore()
-                .collection(this.collection)
+                .collection(this.type)
                 .add({
                     pavadinimas: this.pavadinimas,
                     komentaras: this.komentaras,
                     uid: firebase.auth().currentUser.uid,
+                    type: this.type,
                 })
-                .then(() => {
-                    (this.loading = false),
-                        (this.notification = true),
-                        (this.type = "is-success"),
-                        (this.Message =
-                            "Sėkmingai pridėjote nauja sritį/ produkta");
+                .then((doc) => {
+                    this.$router.push(`/product/${this.type}/${doc.id}`);
                 })
                 .catch((error) => {
                     (this.loading = false),
@@ -136,4 +131,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.cont-wide {
+    max-width: 650px;
+}
+</style>

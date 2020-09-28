@@ -14,7 +14,7 @@ const routes = [
         name: "Home",
         component: Home,
         meta: {
-            requiresAuth: true,
+            requiresAnon: true,
         },
     },
     {
@@ -82,12 +82,12 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
     firebase.auth().onAuthStateChanged((user) => {
         if (!user && to.matched.some((route) => route.meta.requiresAuth)) {
-            next({ path: "/login" });
+            next({ path: "/" });
         } else if (
             user &&
             to.matched.some((route) => route.meta.requiresAnon)
         ) {
-            next({ path: "/" });
+            next({ path: "/finance" });
         } else {
             next();
         }
