@@ -2,8 +2,7 @@
 node_modules
 /dist
 
-# firebase
-/src/servers
+
 
 # local env files
 .env.local
