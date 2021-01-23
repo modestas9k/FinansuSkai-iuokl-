@@ -11,7 +11,7 @@
                         :message="Message"
                     />
 
-                    <div class="field">
+                    <div class="field mb-5">
                         <label class="label" for="kiekis">Kiekis</label>
                         <div class="control">
                             <input
@@ -24,22 +24,43 @@
                             />
                         </div>
                     </div>
-
-                    <div class="field">
-                        <label class="label" for="kaina">Kaina</label>
-                        <div class="control">
-                            <input
-                                class="input"
-                                v-model="kaina"
-                                type="number"
-                                step=".01"
-                                placeholder="Vieneto kaina"
-                                id="kaina"
-                                required
-                            />
-                        </div>
+                    <div class="tabs is-boxed mb-0">
+                        <ul>
+                            <li :class="[select === 'suma' ? 'is-active' : '']" @click="select='suma'"><a>Suma</a></li>
+                            <li :class="[select === 'vidKaina' ? 'is-active' : '']" @click="select='vidKaina'"><a>Vidutine kaina</a></li>
+                        </ul>
                     </div>
-                    <div class="field">
+                   <div v-if=" this.select === 'suma' ">
+                        <div class="field mb-5">
+                            <div class="control">
+                                <input
+                                    class="input"
+                                    v-model="suma"
+                                    type="number"
+                                    step=".1"
+                                    placeholder="Visa suma"
+                                    id="suma"
+                                    required
+                                />
+                            </div>
+                        </div>
+                   </div>
+                   <div v-if=" this.select === 'vidKaina' ">
+                        <div class="field mb-5">
+                            <div class="control">
+                                <input
+                                    class="input"
+                                    v-model="vidKaina"
+                                    type="number"
+                                    step=".1"
+                                    placeholder="Vieneto kaina"
+                                    id="kaina"
+                                    required
+                                />
+                            </div>
+                        </div>
+                   </div>
+                    <div class="field mb-5">
                         <label class="label" for="data">Data</label>
                         <div class="control">
                             <input
@@ -54,7 +75,7 @@
 
                     <div class="field buttons">
                         <button
-                            class="button is-primary"
+                            class="button is-primary is-rounded"
                             :class="loading && 'is-loading'"
                             type="submit"
                         >
@@ -64,7 +85,7 @@
                         <div class="control">
                             <router-link
                                 to="/finance"
-                                class="button is-primary is-outlined"
+                                class="button is-primary is-rounded is-outlined"
                             >
                                 Atgal
                             </router-link>
@@ -94,8 +115,11 @@ export default {
             .padStart(2, "0");
 
         return {
-            kiekis: Number,
-            kaina: Number,
+            kiekis: "",
+            kaina: "",
+            vidKaina: "",
+            suma: "",
+            select: "suma",
             data: `${year}-${month}-${date}`,
             notification: false,
             Message: "",
@@ -104,35 +128,47 @@ export default {
         };
     },
     methods: {
-        add() {
-            this.loading = true;
-            firebase
-                .firestore()
-                .collection(this.$route.params.type)
-                .doc(this.$route.params.id)
-                .collection("irasai")
-                .add({
-                    kiekis: this.kiekis,
-                    kaina: this.kaina,
-                    data: this.data,
-                })
+        calculate() {
+            if(Number(this.suma) > 0) {
+               this.kaina = Number(this.suma) / Number(this.kiekis);
+            } else {
+                this.kaina = Number(this.vidKaina);
+            }
+        },
 
-                .then(() => {
-                    (this.loading = false),
-                        (this.notification = true),
-                        (this.type = "is-success"),
-                        (this.Message =
-                            "Sėkmingai pridėjote nauja sritį/ produkta"),
-                        this.$router.push(
-                            `/product/${this.$route.params.type}/${this.$route.params.id}`
-                        );
-                })
-                .catch((error) => {
-                    (this.loading = false),
-                        (this.notification = true),
-                        (this.type = "is-danger"),
-                        (this.Message = `Įvyko klaida: ${error.message}`);
-                });
+        add() {
+            this.calculate();
+            this.loading = true;
+            if(this.kiekis && this.kaina && this.data) {
+
+                firebase
+                    .firestore()
+                    .collection(this.$route.params.type)
+                    .doc(this.$route.params.id)
+                    .collection("irasai")
+                    .add({
+                        kiekis: this.kiekis,
+                        kaina: this.kaina,
+                        data: this.data,
+                    })
+    
+                    .then(() => {
+                        (this.loading = false),
+                            (this.notification = true),
+                            (this.type = "is-success"),
+                            (this.Message =
+                                "Sėkmingai pridėjote nauja sritį/ produkta"),
+                            this.$router.push(
+                                `/product/${this.$route.params.type}/${this.$route.params.id}`
+                            );
+                    })
+                    .catch((error) => {
+                        (this.loading = false),
+                            (this.notification = true),
+                            (this.type = "is-danger"),
+                            (this.Message = `Įvyko klaida: ${error.message}`);
+                    });
+            }
         },
     },
 };
@@ -140,7 +176,9 @@ export default {
 
 <style scoped>
 .cont-wide {
-    max-width: 650px;
+    width: 100%;
+    max-width: 750px;
+    min-width: 300px;
 }
 .center {
     display: flex;
