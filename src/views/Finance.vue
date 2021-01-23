@@ -1,6 +1,5 @@
 <template>
     <div class="finance">
-        <Header />
         <div class="section ">
             <div class="container cont-wide">
                 <div class="buttons">
@@ -14,7 +13,9 @@
                 <div class="box">
                     <div class="columns is-mobile">
                         <div class="column is-1"></div>
-                        <h2 class="title mt-4 mb-2">Pajamos</h2>
+                        <h2 class="title is-4 has-text-weight-bold mt-4 mb-2">
+                            Pajamos
+                        </h2>
                     </div>
 
                     <div
@@ -40,6 +41,7 @@
                         v-for="list in pajamos"
                         :key="list.id"
                     >
+                    <div class="column-wrapper">
                         <div class="column">
                             <h5 class="subtitle">
                                 {{ list.pavadinimas }}
@@ -54,6 +56,7 @@
                             <h5 class="subtitle">
                                 {{ `${kiekis(list.irasai)}` }}
                             </h5>
+                        </div>
                         </div>
                     </router-link>
                     <div class="columns has-text-centered is-mobile mt-2 mb-1">
@@ -77,7 +80,9 @@
                 <div class="box">
                     <div class="columns is-mobile">
                         <div class="column is-1"></div>
-                        <h2 class="title mt-4 mb-2">Išlaidos</h2>
+                        <h2 class="title is-4 has-text-weight-bold mt-4 mb-2">
+                            Išlaidos
+                        </h2>
                     </div>
                     <div
                         class="columns has-text-centered is-vcentered is-mobile mb-0 mt-1"
@@ -102,14 +107,7 @@
                         v-for="list in islaidos"
                         :key="list.id"
                     >
-                        <!-- <div class="column  is-1">
-                            <router-link
-                                :to="`/product/islaidos/${list.id}`"
-                                class="button round is-success "
-                            >
-                                +
-                            </router-link>
-                        </div> -->
+                       <div class="column-wrapper">
                         <div class="column">
                             <h5 class="subtitle">
                                 {{ list.pavadinimas }}
@@ -124,6 +122,7 @@
                             <h5 class="subtitle">
                                 {{ `${kiekis(list.irasai)}` }}
                             </h5>
+                        </div>
                         </div>
                     </router-link>
                     <div class="columns has-text-centered is-mobile mt-2 mb-1">
@@ -150,12 +149,11 @@
 </template>
 
 <script>
-import Header from "../components/Header";
 import firebase from "firebase/app";
 import "firebase/firestore";
 export default {
     name: "finance",
-    components: { Header },
+
     data() {
         return {
             pajamos: [],
@@ -291,6 +289,15 @@ export default {
 </script>
 
 <style>
+.column-wrapper {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+.column-wrapper:hover {
+    background: #eee;
+}
+
 .line {
     border: 1px solid rgb(197, 197, 197);
 }

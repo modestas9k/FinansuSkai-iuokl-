@@ -28,6 +28,7 @@
                     </div>
                     <div class="field">
                         <div class="control">
+                            
                             <label class="radio">
                                 <input
                                     type="radio"
@@ -64,7 +65,7 @@
                     <div class="field is-grouped">
                         <div class="control">
                             <button
-                                class="button is-primary"
+                                class="button is-primary is-rounded"
                                 :class="loading && 'is-loading'"
                                 type="submit"
                             >
@@ -74,7 +75,7 @@
                         <div class="control">
                             <router-link
                                 to="/finance"
-                                class="button is-primary is-outlined"
+                                class="button is-primary is-rounded is-outlined"
                             >
                                 Atgal
                             </router-link>

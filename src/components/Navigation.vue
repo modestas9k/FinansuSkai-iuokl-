@@ -9,19 +9,15 @@
                 <h1 class="title">Finansų skaičiuoklė</h1>
             </router-link>
         </div>
-        <div class="navbar-end max-width">
-            <div class="navbar-item">
-                <div class="buttons">
-                    <button
-                        v-if="loggedIn"
-                        v-on:click="logout()"
-                        class="button is-danger is-outlined is-rounded"
-                    >
-                        Atsijungti
-                    </button>
-                </div>
-            </div>
-        </div>
+        <div class="buttons">
+            <button
+                v-if="loggedIn"
+                v-on:click="logout()"
+                class="button is-danger is-outlined is-rounded"
+            >
+                Atsijungti
+            </button>
+        </div>    
     </nav>
 </template>
 
@@ -58,6 +54,12 @@ export default {
 </script>
 
 <style scoped>
+nav {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 2px 10px;
+}
 .title {
     color: white;
     font-size: 1.5em;
