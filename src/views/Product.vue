@@ -1,17 +1,6 @@
 <template>
     <div class="product">
-        <section class="hero  is-primary is-bold">
-            <div class="hero-body ">
-                <div class="container has-text-centered">
-                    <h1 class="title ">
-                        {{ this.produktas.pavadinimas }}
-                    </h1>
-                    <p class="subtitle ">
-                        {{ `${firstLastData(irasai)}` }}
-                    </p>
-                </div>
-            </div>
-        </section>
+        <section class="hero  is-primary is-bold"></section>
         <div class="section">
             <div class="container cont-wide">
                 <div class="columns is-mobile">
@@ -46,7 +35,12 @@
                 </div>
 
                 <div class="box">
-                    <h2 class="title">Informacija</h2>
+                    <h1 class="title ">
+                        {{ this.produktas.pavadinimas }}
+                    </h1>
+                    <p class="subtitle ">
+                        {{ `${firstLastData(irasai)}` }}
+                    </p>
                     <div class="line"></div>
                     <div
                         class="columns is-vcentered has-text-centered is-mobile mb-0 mt-1"
@@ -89,7 +83,7 @@
                             <h5 class="has-text-weight-bold">
                                 Užrašai
                                 <button
-                                    class="button is-primary is-small is-pulled-right is-rounded"
+                                    class="button is-primary is-pulled-right rounded"
                                 >
                                     <span
                                         class="icon"
@@ -173,7 +167,7 @@
                         </div>
                         <div class="column is-2">
                             <button
-                                class="button is-danger  is-small is-rounded"
+                                class="button is-danger rounded"
                                 v-on:click="deleteStoryItem(list.id)"
                             >
                                 <span class="icon">
@@ -222,17 +216,23 @@ export default {
                 const lastfromArray = array.length - 1;
                 let last = array[lastfromArray].data;
                 return first + " / " + last;
+            } else {
+                return "Čia matysite informacija kai pridėsite įrašus";
             }
         },
         vidurkis(array) {
-            let number = 0;
-            let spliter = 0;
-            array.forEach((obj) => {
-                number += obj.kaina;
-                spliter += 1;
-            });
-            let answer = number / spliter;
-            return answer.toFixed(2);
+            if (array != "") {
+                let number = 0;
+                let spliter = 0;
+                array.forEach((obj) => {
+                    number += obj.kaina;
+                    spliter += 1;
+                });
+                let answer = number / spliter;
+                return answer.toFixed(2);
+            } else {
+                return 0;
+            }
         },
         deleteItem() {
             firebase
@@ -331,22 +331,7 @@ export default {
 .cont-wide {
     max-width: 650px;
 }
-/* 
-.grid {
-    display: grid;
-    grid-template-columns: [xl-start] 1fr 1.5rem [md-start] minmax(0, 624px) [md-end] 1.5rem 1fr [xl-end];
+.rounded {
+    border-radius: 100%;
 }
-
-.grid * {
-    grid-column: md;
-}
-.grid-xl {
-    grid-column: xl;
-}
-
-@media (max-width: 672px) {
-    :root {
-        font-size: 90%;
-    }
-} */
 </style>
