@@ -10,7 +10,7 @@
                         Pridėti nauja sritį
                     </router-link>
                 </div>
-                <div class="box">
+                <div class="box">  <!-- income -->
                     <div class="columns is-mobile">
                         <div class="column is-1"></div>
                         <h2 class="title is-4 has-text-weight-bold mt-4 mb-2">
@@ -27,7 +27,9 @@
                             </h5>
                         </div>
                         <div class="column border">
-                            <h5 class="has-text-weight-bold">Suma</h5>
+                            <h5 class="has-text-weight-bold">
+                                Suma
+                            </h5>
                         </div>
                         <div class="column border">
                             <h5 class="has-text-weight-bold">
@@ -36,25 +38,25 @@
                         </div>
                     </div>
                     <router-link
-                        :to="`/product/pajamos/${list.id}`"
+                        :to="`/users/${user}/income/${list.id}`"
                         class="columns has-text-centered is-hoverable is-mobile mb-1 mt-1 is-vcentered"
-                        v-for="list in pajamos"
+                        v-for="list in income"
                         :key="list.id"
                     >
                     <div class="column-wrapper">
                         <div class="column">
                             <h5 class="subtitle">
-                                {{ list.pavadinimas }}
+                                {{ list.title }}
                             </h5>
                         </div>
                         <div class="column">
                             <h5 class="subtitle">
-                                {{ `${suma(list.irasai)} €` }}
+                                <!-- {{ `${suma(list.irasai)} €` }} -->
                             </h5>
                         </div>
                         <div class="column">
                             <h5 class="subtitle">
-                                {{ `${kiekis(list.irasai)}` }}
+                                <!-- {{ `${kiekis(list.irasai)}` }} -->
                             </h5>
                         </div>
                         </div>
@@ -67,17 +69,17 @@
                         </div>
                         <div class="column border-top">
                             <h5 class="subtitle has-text-weight-bold">
-                                {{ `${visoSuma(pajamos)} €` }}
+                                <!-- {{ `${visoSuma(income)} €` }} -->
                             </h5>
                         </div>
                         <div class="column border-top">
                             <h5 class="subtitle has-text-weight-bold">
-                                {{ `${visoKiekis(pajamos)}` }}
+                                <!-- {{ `${visoKiekis(income)}` }} -->
                             </h5>
                         </div>
                     </div>
                 </div>
-                <div class="box">
+                <div class="box"> <!-- cost -->
                     <div class="columns is-mobile">
                         <div class="column is-1"></div>
                         <h2 class="title is-4 has-text-weight-bold mt-4 mb-2">
@@ -102,25 +104,25 @@
                         </div>
                     </div>
                     <router-link
-                        :to="`/product/islaidos/${list.id}`"
+                        :to="`/users/${user}/cost/${list.id}`"
                         class="columns has-text-centered is-mobile mb-1 mt-1 is-vcentered"
-                        v-for="list in islaidos"
+                        v-for="list in cost"
                         :key="list.id"
                     >
                        <div class="column-wrapper">
                         <div class="column">
                             <h5 class="subtitle">
-                                {{ list.pavadinimas }}
+                                {{ list.title }}
                             </h5>
                         </div>
                         <div class="column">
                             <h5 class="subtitle">
-                                {{ `${suma(list.irasai)} €` }}
+                                <!-- {{ `${suma(list.irasai)} €` }} -->
                             </h5>
                         </div>
                         <div class="column">
                             <h5 class="subtitle">
-                                {{ `${kiekis(list.irasai)}` }}
+                                <!-- {{ `${kiekis(list.irasai)}` }} -->
                             </h5>
                         </div>
                         </div>
@@ -133,12 +135,12 @@
                         </div>
                         <div class="column border-top">
                             <h5 class="subtitle has-text-weight-bold">
-                                {{ `${visoSuma(islaidos)} €` }}
+                                <!-- {{ `${totalSum(cost)} €` }} -->
                             </h5>
                         </div>
                         <div class="column border-top">
                             <h5 class="subtitle has-text-weight-bold">
-                                {{ `${visoKiekis(islaidos)}` }}
+                                <!-- {{ `${totalQuantity(cost)}` }} -->
                             </h5>
                         </div>
                     </div>
@@ -150,53 +152,56 @@
 
 <script>
 import firebase from "firebase/app";
+import "firebase/auth";
 import "firebase/firestore";
 export default {
     name: "finance",
 
     data() {
         return {
-            pajamos: [],
-            islaidos: [],
+            data: [],
+            income: [],
+            cost: [],
+            user: firebase.auth().currentUser.uid,
         };
     },
     methods: {
-        visoSuma(array) {
+        totalSum(array) {
             let total = 0;
             array.forEach((data) => {
                 let answer = 0;
-                data.irasai.forEach((obj) => {
-                    answer += obj.kiekis * obj.kaina;
+                data.records.forEach((obj) => {
+                    answer += obj.quantity * obj.averagePrice;
                 });
                 total += answer;
             });
             return total;
         },
 
-        visoKiekis(array) {
+        totalQuantity(array) {
             let total = 0;
             array.forEach((data) => {
                 let answer = 0;
-                data.irasai.forEach((obj) => {
-                    answer += obj.kiekis;
+                data.records.forEach((obj) => {
+                    answer += obj.quantity;
                 });
                 total += answer;
             });
             return total;
         },
 
-        suma(array) {
+        total(array) {
             let answer = 0;
             array.forEach((obj) => {
-                answer += obj.kiekis * obj.kaina;
+                answer += obj.quantity * obj.averagePrice;
             });
             return answer;
         },
 
-        kiekis(array) {
+        quantity(array) {
             let answer = 0;
             array.forEach((obj) => {
-                answer += obj.kiekis;
+                answer += obj.quantity;
             });
             return answer;
         },
@@ -204,86 +209,115 @@ export default {
         firstLastData(array) {
             if (array.length != 0) {
                 let first = array[0].data;
-                const lastfromArray = array.length - 1;
-                let last = array[lastfromArray].data;
+                const lastFromArray = array.length - 1;
+                let last = array[lastFromArray].data;
                 return first + " / " + last;
             }
         },
 
-        vidurkis(array) {
+        average(array) {
             let number = 0;
-            let spliter = 0;
+            let splitter = 0;
             array.forEach((obj) => {
-                number += obj.kaina;
-                spliter += 1;
+                number += obj.averagePrice;
+                splitter += 1;
             });
-            let answer = number / spliter;
+            let answer = number / splitter;
             return answer.toFixed(2);
         },
     },
 
     beforeMount() {
-        firebase
-            .firestore()
-            .collection("pajamos")
-            .where("uid", "==", firebase.auth().currentUser.uid)
-            .get()
-            .then((snapshot) =>
-                snapshot.docs.forEach((fDoc) => {
-                    firebase
-                        .firestore()
-                        .collection("pajamos")
-                        .doc(fDoc.id)
-                        .collection("irasai")
-                        .get()
-                        .then((doc) => {
-                            let irasai = [];
-                            doc.docs.forEach((prod) => {
-                                irasai.push({
-                                    kiekis: Number(prod.data().kiekis),
-                                    kaina: Number(prod.data().kaina),
-                                });
-                            });
-                            this.pajamos.push({
-                                id: fDoc.id,
-                                pavadinimas: fDoc.data().pavadinimas,
-                                irasai: irasai,
-                                uid: fDoc.data().uid,
-                            });
-                        });
-                })
-            );
 
         firebase
             .firestore()
-            .collection("islaidos")
-            .where("uid", "==", firebase.auth().currentUser.uid)
+            .collection("users")
+            .doc(this.user)
+            .collection("cost")
             .get()
-            .then((snapshot) => {
-                snapshot.docs.forEach((fDoc) => {
-                    firebase
-                        .firestore()
-                        .collection("islaidos")
-                        .doc(fDoc.id)
-                        .collection("irasai")
-                        .get()
-                        .then((doc) => {
-                            let irasai = [];
-                            doc.docs.forEach((prod) => {
-                                irasai.push({
-                                    kiekis: Number(prod.data().kiekis),
-                                    kaina: Number(prod.data().kaina),
-                                });
-                            });
-                            this.islaidos.push({
-                                id: fDoc.id,
-                                pavadinimas: fDoc.data().pavadinimas,
-                                irasai: irasai,
-                                uid: fDoc.data().uid,
-                            });
-                        });
-                });
-            });
+            .then((snapshot) => snapshot.docs.forEach((fDoc) => {
+               this.cost.push({
+                   id: fDoc.id,
+                   type: fDoc.data().type,
+                   title: fDoc.data().title,
+               }) 
+            }))
+
+        firebase
+            .firestore()
+            .collection("users")
+            .doc(this.user)
+            .collection("income")
+            .get()
+            .then((snapshot) => snapshot.docs.forEach((fDoc) => {
+               this.income.push({
+                   id: fDoc.id,
+                   type: fDoc.data().type,
+                   title: fDoc.data().title,
+               }) 
+            }))
+
+        // firebase
+        //     .firestore()
+        //     .collection("income")
+        //     .where("uid", "==", firebase.auth().currentUserr.uid)
+        //     .get()
+        //     .then((snapshot) =>
+        //         snapshot.docs.forEach((fDoc) => {
+        //             firebase
+        //                 .firestore()
+        //                 .collection("income")
+        //                 .doc(fDoc.id)
+        //                 .collection("irasai")
+        //                 .get()
+        //                 .then((doc) => {
+        //                     let irasai = [];
+        //                     doc.docs.forEach((prod) => {
+        //                         irasai.push({
+        //                             kiekis: Number(prod.data().kiekis),
+        //                             kaina: Number(prod.data().kaina),
+        //                         });
+        //                     });
+        //                     this.income.push({
+        //                         id: fDoc.id,
+        //                         title: fDoc.data().title,
+        //                         irasai: irasai,
+        //                         uid: fDoc.data().uid,
+        //                     });
+        //                 });
+        //         })
+        //     );
+
+        // firebase
+        //     .firestore()
+        //     .collection("cost")
+        //     .where("uid", "==", firebase.auth().currentUserr.uid)
+        //     .get()
+        //     .then((snapshot) => {
+        //         snapshot.docs.forEach((fDoc) => {
+        //             firebase
+        //                 .firestore()
+        //                 .collection("cost")
+        //                 .doc(fDoc.id)
+        //                 .collection("irasai")
+        //                 .get()
+        //                 .then((doc) => {
+        //                     let irasai = [];
+        //                     doc.docs.forEach((prod) => {
+        //                         irasai.push({
+        //                             kiekis: Number(prod.data().kiekis),
+        //                             kaina: Number(prod.data().kaina),
+        //                         });
+        //                     });
+        //                     this.cost.push({
+        //                         id: fDoc.id,
+        //                         title: fDoc.data().title,
+        //                         irasai: irasai,
+        //                         uid: fDoc.data().uid,
+        //                     });
+        //                 });
+        //         });
+        //     });
     },
 };
 </script>
