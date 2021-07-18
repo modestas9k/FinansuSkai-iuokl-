@@ -4,6 +4,7 @@
             <div class="container center">
                 <form v-on:submit.prevent="add" class="box cont-wide">
                     <h1 class="title is-2">Pridėti nauja įraša</h1>
+                    
                     <Notification
                         v-if="notification"
                         v-on:close="notification = false"
@@ -11,68 +12,157 @@
                         :message="Message"
                     />
 
-                    <div class="field mb-5">
-                        <label class="label" for="kiekis">Kiekis</label>
-                        <div class="control">
-                            <input
-                                class="input"
-                                v-model="kiekis"
-                                type="number"
-                                placeholder="Skaičius parduotu prekiu"
-                                id="kiekis"
-                                required
-                            />
-                        </div>
-                    </div>
-                    <div class="tabs is-boxed mb-0">
+                  
+                    <!-- <div class="tabs is-boxed mb-0">
                         <ul>
-                            <li :class="[select === 'suma' ? 'is-active' : '']" @click="select='suma'"><a>Suma</a></li>
-                            <li :class="[select === 'vidKaina' ? 'is-active' : '']" @click="select='vidKaina'"><a>Vidutine kaina</a></li>
+                            <li :class="[select == 'one' ? 'is-active' : '']" @click="select='one'"><a>1</a></li>
+                            <li :class="[select == '2' ? 'is-active' : '']" @click="select='2'"><a>2</a></li>
+                            <li :class="[select == '3' ? 'is-active' : '']" @click="select='3'"><a>3</a></li>
                         </ul>
-                    </div>
-                   <div v-if=" this.select === 'suma' ">
-                        <div class="field mb-5">
+                    </div> -->
+
+                   <!-- <div v-if=" this.select == 'one' ">
+                        <div class="field mb-5 mt-5">
+                            <label class="label" for="total">Suma</label>
                             <div class="control">
                                 <input
                                     class="input"
-                                    v-model="suma"
+                                    v-model="total"
                                     type="number"
                                     step=".1"
                                     placeholder="Visa suma"
-                                    id="suma"
+                                    id="total"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div class="field mb-5">
+                            <label class="label" for="quantity">Kiekis (nebutina)</label>
+                            <div class="control">
+                                <input
+                                    class="input"
+                                    v-model="quantity"
+                                    type="number"
+                                    placeholder="Skaičius parduotu prekiu"
+                                    id="quantity"
+                                    
+                                />
+                            </div>
+                        </div>
+                   </div>
+                   <div v-if=" this.select == '2' ">
+                        <div class="field mb-5 mt-5">
+                            <label class="label" for="total2">Suma</label>
+                            <div class="control">
+                                <input
+                                    class="input"
+                                    v-model="total"
+                                    type="number"
+                                    step=".1"
+                                    placeholder="Visa suma"
+                                    id="total2"
+                                    required
+                                />
+                            </div>
+                        </div>
+                          <div class="field mb-5 mt-5">
+                            <label class="label" for="averagePrice">Vidutinė kaina</label>
+                            <div class="control">
+                                <input
+                                    class="input"
+                                    v-model="averagePrice"
+                                    type="number"
+                                    step=".1"
+                                    placeholder="Vieneto kaina"
+                                    id="averagePrice"
                                     required
                                 />
                             </div>
                         </div>
                    </div>
-                   <div v-if=" this.select === 'vidKaina' ">
-                        <div class="field mb-5">
+                    <div v-if=" this.select == '3' ">
+                       
+                        <div class="field mb-5 mt-5">
+                            <label class="label" for="averagePrice2">Vidutinė kaina</label>
                             <div class="control">
                                 <input
                                     class="input"
-                                    v-model="vidKaina"
+                                    v-model="averagePrice"
                                     type="number"
                                     step=".1"
                                     placeholder="Vieneto kaina"
-                                    id="kaina"
+                                    id="averagePrice2"
                                     required
+                                />
+                            </div>
+                        </div>
+                        <div class="field mb-5">
+                            <label class="label" for="quantity2">Kiekis</label>
+                            <div class="control">
+                                <input
+                                    class="input"
+                                    v-model="quantity"
+                                    type="number"
+                                    placeholder="Skaičius parduotu prekiu"
+                                    id="quantity2"
+                                    required
+                                />
+                            </div>
+                        </div>
+                   </div> -->
+                    
+                    <div>
+                        <div class="field mb-5 mt-5">
+                            <label class="label" for="total">Suma</label>
+                            <div class="control">
+                                <input
+                                    class="input"
+                                    v-model="total"
+                                    type="number"
+                                    step=".1"
+                                    placeholder="Visa suma"
+                                    id="total"
+                                />
+                            </div>
+                        </div>
+                        <div class="field mb-5">
+                            <label class="label" for="quantity">Kiekis</label>
+                            <div class="control">
+                                <input
+                                    class="input"
+                                    v-model="quantity"
+                                    type="number"
+                                    placeholder="Skaičius parduotu prekiu"
+                                    id="quantity"
+                                />
+                            </div>
+                        </div>
+                        <div class="field mb-5 mt-5">
+                            <label class="label" for="averagePrice">Vidutinė kaina</label>
+                            <div class="control">
+                                <input
+                                    class="input"
+                                    v-model="averagePrice"
+                                    type="number"
+                                    step=".1"
+                                    placeholder="Vieneto kaina"
+                                    id="averagePrice"
                                 />
                             </div>
                         </div>
                    </div>
                     <div class="field mb-5">
-                        <label class="label" for="data">Data</label>
+                        <label class="label" for="date">Data</label>
                         <div class="control">
                             <input
                                 class="input"
-                                v-model="data"
+                                v-model="date"
                                 type="date"
-                                id="data"
+                                id="date"
                                 required
                             />
                         </div>
                     </div>
-
                     <div class="field buttons">
                         <button
                             class="button is-primary is-rounded"
@@ -115,43 +205,38 @@ export default {
             .padStart(2, "0");
 
         return {
-            kiekis: "",
-            kaina: "",
-            vidKaina: "",
-            suma: "",
-            select: "suma",
-            data: `${year}-${month}-${date}`,
+            total: "",
+            quantity: "",
+            averagePrice: "",
+            select: "one",
+            date: `${year}-${month}-${date}`,
             notification: false,
             Message: "",
             loading: false,
             collection: "",
+            user: firebase.auth().currentUser.uid,
         };
     },
     methods: {
-        calculate() {
-            if(Number(this.suma) > 0) {
-               this.kaina = Number(this.suma) / Number(this.kiekis);
-            } else {
-                this.kaina = Number(this.vidKaina);
-            }
-        },
-
         add() {
-            this.calculate();
             this.loading = true;
-            if(this.kiekis && this.kaina && this.data) {
 
-                firebase
-                    .firestore()
-                    .collection(this.$route.params.type)
-                    .doc(this.$route.params.id)
-                    .collection("irasai")
+            if(this.total && this.date || 
+            this.total && this.averagePrice && this.date ||
+            this.averagePrice && this.quantity && this.date) {
+
+                firebase.firestore()
+                    .collection("users")
+                    .doc(this.user) 
+                    .collection(this.$route.params.type) // type = income or cost
+                    .doc(this.$route.params.id) // id = product id
+                    .collection("records")
                     .add({
-                        kiekis: this.kiekis,
-                        kaina: this.kaina,
-                        data: this.data,
+                        total: this.total,
+                        quantity: this.quantity,
+                        averagePrice: this.averagePrice,
+                        date: this.date,
                     })
-    
                     .then(() => {
                         (this.loading = false),
                             (this.notification = true),
@@ -159,7 +244,7 @@ export default {
                             (this.Message =
                                 "Sėkmingai pridėjote nauja sritį/ produkta"),
                             this.$router.push(
-                                `/product/${this.$route.params.type}/${this.$route.params.id}`
+                                `/users/${this.user}/${this.$route.params.type}/${this.$route.params.id}`
                             );
                     })
                     .catch((error) => {
@@ -168,6 +253,11 @@ export default {
                             (this.type = "is-danger"),
                             (this.Message = `Įvyko klaida: ${error.message}`);
                     });
+            } else {
+                this.loading = false;
+                this.notification = true;
+                this.type = "is-danger";
+                this.Message = "Įveskite daugiau informacijos.";
             }
         },
     },
