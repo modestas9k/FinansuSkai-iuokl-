@@ -51,12 +51,12 @@
                         </div>
                         <div class="column">
                             <h5 class="subtitle">
-                                <!-- {{ `${suma(list.irasai)} €` }} -->
+                                {{ `${total(list.records)} €` }}
                             </h5>
                         </div>
                         <div class="column">
                             <h5 class="subtitle">
-                                <!-- {{ `${kiekis(list.irasai)}` }} -->
+                                {{ `${quantity(list.records)}` }}
                             </h5>
                         </div>
                         </div>
@@ -69,17 +69,17 @@
                         </div>
                         <div class="column border-top">
                             <h5 class="subtitle has-text-weight-bold">
-                                <!-- {{ `${visoSuma(income)} €` }} -->
+                                {{ `${totalSum(income)} €` }}
                             </h5>
                         </div>
                         <div class="column border-top">
                             <h5 class="subtitle has-text-weight-bold">
-                                <!-- {{ `${visoKiekis(income)}` }} -->
+                                {{ `${totalQuantity(income)}` }}
                             </h5>
                         </div>
                     </div>
                 </div>
-                <div class="box"> <!-- cost -->
+                <div class="box">   <!-- cost -->
                     <div class="columns is-mobile">
                         <div class="column is-1"></div>
                         <h2 class="title is-4 has-text-weight-bold mt-4 mb-2">
@@ -117,12 +117,12 @@
                         </div>
                         <div class="column">
                             <h5 class="subtitle">
-                                <!-- {{ `${suma(list.irasai)} €` }} -->
+                                {{ `${total(list.records)} €` }}
                             </h5>
                         </div>
                         <div class="column">
                             <h5 class="subtitle">
-                                <!-- {{ `${kiekis(list.irasai)}` }} -->
+                                {{ `${quantity(list.records)}` }}
                             </h5>
                         </div>
                         </div>
@@ -135,12 +135,12 @@
                         </div>
                         <div class="column border-top">
                             <h5 class="subtitle has-text-weight-bold">
-                                <!-- {{ `${totalSum(cost)} €` }} -->
+                                {{ `${totalSum(cost)} €` }}
                             </h5>
                         </div>
                         <div class="column border-top">
                             <h5 class="subtitle has-text-weight-bold">
-                                <!-- {{ `${totalQuantity(cost)}` }} -->
+                                {{ `${totalQuantity(cost)}` }}
                             </h5>
                         </div>
                     </div>
@@ -159,7 +159,6 @@ export default {
 
     data() {
         return {
-            data: [],
             income: [],
             cost: [],
             user: firebase.auth().currentUser.uid,
@@ -168,10 +167,14 @@ export default {
     methods: {
         totalSum(array) {
             let total = 0;
-            array.forEach((data) => {
+            array.forEach((obj) => {
                 let answer = 0;
-                data.records.forEach((obj) => {
-                    answer += obj.quantity * obj.averagePrice;
+                obj.records.forEach((obj) => {
+                    if(obj.total == 0 && obj.quantity != 0 && obj.averagePrice != 0) {
+                        answer += obj.quantity * obj.averagePrice;
+                    } else if(obj.total != 0) {
+                    answer += obj.total;
+                    }
                 });
                 total += answer;
             });
@@ -183,7 +186,11 @@ export default {
             array.forEach((data) => {
                 let answer = 0;
                 data.records.forEach((obj) => {
-                    answer += obj.quantity;
+                    if(obj.quantity == 0 && obj.averagePrice != 0 && obj.total != 0) {
+                        answer += obj.total / obj.averagePrice;
+                    } else if(obj.quantity != 0) {
+                        answer += obj.quantity;
+                    } 
                 });
                 total += answer;
             });
@@ -193,7 +200,11 @@ export default {
         total(array) {
             let answer = 0;
             array.forEach((obj) => {
-                answer += obj.quantity * obj.averagePrice;
+                if(obj.total == 0 && obj.quantity != 0 && obj.averagePrice != 0) {
+                    answer += obj.quantity * obj.averagePrice;
+                } else if(obj.total != 0) {
+                    answer += obj.total;
+                } 
             });
             return answer;
         },
@@ -201,7 +212,11 @@ export default {
         quantity(array) {
             let answer = 0;
             array.forEach((obj) => {
-                answer += obj.quantity;
+                if(obj.quantity == 0 && obj.averagePrice != 0 && obj.total != 0) {
+                    answer += obj.total / obj.average;
+                } else {
+                    answer += obj.quantity;
+                }
             });
             return answer;
         },
@@ -236,11 +251,32 @@ export default {
             .collection("cost")
             .get()
             .then((snapshot) => snapshot.docs.forEach((fDoc) => {
-               this.cost.push({
-                   id: fDoc.id,
-                   type: fDoc.data().type,
-                   title: fDoc.data().title,
-               }) 
+                firebase
+                    .firestore()
+                    .collection("users")
+                    .doc(this.user)
+                    .collection("cost")
+                    .doc(fDoc.id)
+                    .collection('records')
+                    .get()
+                    .then((record) => {
+                        let info = [];
+                        record.forEach((doc) => {
+                            info.push({
+                                total: Number(doc.data().total),
+                                averagePrice: Number(doc.data().averagePrice),
+                                quantity: Number(doc.data().quantity),
+                                date: doc.data().date,
+
+                            })
+                        })
+                        this.cost.push({
+                        id: fDoc.id,
+                        type: fDoc.data().type,
+                        title: fDoc.data().title,
+                        records: info,
+                        }) 
+                    })
             }))
 
         firebase
@@ -250,74 +286,34 @@ export default {
             .collection("income")
             .get()
             .then((snapshot) => snapshot.docs.forEach((fDoc) => {
-               this.income.push({
-                   id: fDoc.id,
-                   type: fDoc.data().type,
-                   title: fDoc.data().title,
-               }) 
+                firebase
+                    .firestore()
+                    .collection("users")
+                    .doc(this.user)
+                    .collection("income")
+                    .doc(fDoc.id)
+                    .collection('records')
+                    .get()
+                    .then((record) => {
+                        let info = [];
+                        record.forEach((doc) => {
+                            info.push({
+                                total: Number(doc.data().total),
+                                averagePrice: Number(doc.data().averagePrice),
+                                quantity: Number(doc.data().quantity),
+                                date: doc.data().date,
+
+                            })
+                        })
+                        this.income.push({
+                            id: fDoc.id,
+                            type: fDoc.data().type,
+                            title: fDoc.data().title,
+                            records: info,
+                        }) 
+                    })
             }))
 
-        // firebase
-        //     .firestore()
-        //     .collection("income")
-        //     .where("uid", "==", firebase.auth().currentUserr.uid)
-        //     .get()
-        //     .then((snapshot) =>
-        //         snapshot.docs.forEach((fDoc) => {
-        //             firebase
-        //                 .firestore()
-        //                 .collection("income")
-        //                 .doc(fDoc.id)
-        //                 .collection("irasai")
-        //                 .get()
-        //                 .then((doc) => {
-        //                     let irasai = [];
-        //                     doc.docs.forEach((prod) => {
-        //                         irasai.push({
-        //                             kiekis: Number(prod.data().kiekis),
-        //                             kaina: Number(prod.data().kaina),
-        //                         });
-        //                     });
-        //                     this.income.push({
-        //                         id: fDoc.id,
-        //                         title: fDoc.data().title,
-        //                         irasai: irasai,
-        //                         uid: fDoc.data().uid,
-        //                     });
-        //                 });
-        //         })
-        //     );
-
-        // firebase
-        //     .firestore()
-        //     .collection("cost")
-        //     .where("uid", "==", firebase.auth().currentUserr.uid)
-        //     .get()
-        //     .then((snapshot) => {
-        //         snapshot.docs.forEach((fDoc) => {
-        //             firebase
-        //                 .firestore()
-        //                 .collection("cost")
-        //                 .doc(fDoc.id)
-        //                 .collection("irasai")
-        //                 .get()
-        //                 .then((doc) => {
-        //                     let irasai = [];
-        //                     doc.docs.forEach((prod) => {
-        //                         irasai.push({
-        //                             kiekis: Number(prod.data().kiekis),
-        //                             kaina: Number(prod.data().kaina),
-        //                         });
-        //                     });
-        //                     this.cost.push({
-        //                         id: fDoc.id,
-        //                         title: fDoc.data().title,
-        //                         irasai: irasai,
-        //                         uid: fDoc.data().uid,
-        //                     });
-        //                 });
-        //         });
-        //     });
     },
 };
 </script>
