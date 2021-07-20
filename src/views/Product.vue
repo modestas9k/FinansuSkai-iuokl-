@@ -35,13 +35,12 @@
                 </div>
 
                 <div class="box">
-                    <h1 class="product ">
+                    <h1 class="subtitle has-text-weight-bold">
                         {{ this.product.title }}
                     </h1>
-                    <p class="subproduct ">
+                    <p class="">
                         {{ `${firstLastData(records)}` }}
                     </p>
-                    <div class="line"></div>
                     <div
                         class="columns is-vcentered has-text-centered is-mobile mb-0 mt-1"
                     >
@@ -136,8 +135,7 @@
                     </div>
                 </div>
                 <div class="box">
-                    <h2 class="product">Istorija</h2>
-                    <div class="line"></div>
+                    <h2 class="subtitle has-text-weight-bold">Istorija</h2>
                     <div class="columns has-text-centered is-mobile mt-1 mb-0">
                         <div class="column">
                             <h5 class="has-text-weight-bold">Suma</h5>
@@ -151,60 +149,29 @@
                         <div class="column">
                             <h5 class="has-text-weight-bold">Data</h5>
                         </div>
-                        <!-- <div class="column is-2"></div> -->
                     </div>
                     <div class="line"></div>
                     <div
-                        class=""
+                        class="is-hoverable"
                         v-for="list in records"
                         :key="list.id" 
                     >
-                    <div class="columns has-text-centered is-mobile mt-1" 
-                        @click="deleteProductRecord = true">
-                        <div class="column " >
-                            <h5>{{ `${list.total} €`}}</h5>
-                        </div>
-                        <div class="column ">
-                            <h5>{{ list.quantity }}</h5>
-                        </div>
-                        <div class="column ">
-                            <h5>{{ `${list.averagePrice} €` }}</h5>
-                        </div>
-                        <div class="column ">
-                            <h5>{{ list.date }}</h5>
-                        </div>
-                    </div>
-                        <!-- <div
-                            class="modal"
-                            :class="{ 'is-active': deleteProductRecord == true }"
-                        >
-                            <div class="modal-background"></div>
-                            <div class="modal-card">
-                                <header class="modal-card-head">
-                                    <p class="modal-card-product">Ar norite ištrinti šį įraša?</p>
-                                    <button
-                                        class="delete"
-                                        aria-label="close"
-                                        @click="deleteProductRecord = false"
-                                    ></button>
-                                </header>
-                                
-                                <footer class="modal-card-foot">
-                                    <button
-                                        class="button is-primary is-rounded"
-                                        @click="deleteRecordsItem(list.id)"
-                                    >
-                                        Taip
-                                    </button>
-                                    <button
-                                        class="button is-primary is-outlined is-rounded"
-                                        @click="deleteProductRecord = false"
-                                    >
-                                        Ne
-                                    </button>
-                                </footer>
+                        <div class="columns has-text-centered is-hoverable is-mobile mt-1" 
+                            @click="(deleteProductRecord = true,
+                             deleteId = list.id)">
+                            <div class="column " >
+                                <h5>{{ `${list.total} €`}}</h5>
                             </div>
-                        </div> -->
+                            <div class="column ">
+                                <h5>{{ list.quantity }}</h5>
+                            </div>
+                            <div class="column ">
+                                <h5>{{ `${list.averagePrice} €` }}</h5>
+                            </div>
+                            <div class="column ">
+                                <h5>{{ list.date }}</h5>
+                            </div>
+                        </div>
                         <div class="modal"
                         :class="{ 'is-active' : deleteProductRecord }">
                             <div class="modal-background" @click="deleteProductRecord = false"></div>
@@ -212,7 +179,7 @@
                                 <p class="mb-2">Ar norite ištrinti šį įraša?</p>
                                 <button
                                     class="button is-primary is-rounded"
-                                    @click="deleteRecordsItem(list.id)"
+                                    @click="deleteRecordsItem(deleteId)"
                                 >
                                 Taip
                                 </button>
@@ -229,16 +196,6 @@
                                 @click="deleteProductRecord = false">
                             </button>
                         </div>
-                        <!-- <div class="column is-2">
-                            <button
-                                class="button is-danger rounded"
-                                v-on:click="deleteStoryItem(list.id)"
-                            >
-                                <span class="icon">
-                                    <i class="zmdi zmdi-close"></i>
-                                </span>
-                            </button>
-                        </div> -->
                     </div>
                 </div>
             </div>
@@ -259,60 +216,83 @@ export default {
             records: [],
             showModal: false,
             deleteProductRecord: false,
+            deleteId : '',
             user: firebase.auth().currentUser.uid,
         };
     },
     methods: {
         total(array) {
-            let answer = 0;
+            let strict = 0;
+            let calculated = 0;
+
             array.forEach((obj) => {
-                if(obj.averagePrice != 0 && obj.quantity != 0) {
-                    answer += obj.quantity * obj.averagePrice;
+                if (obj.averagePrice != 0 && obj.quantity != 0) {
+                    calculated += obj.quantity * obj.averagePrice;
                 } else {
-                    answer += obj.total;
+                    strict += obj.total;
                 }
             });
-            return answer;
+            if (strict == calculated + strict) {
+                return strict;
+            } else {
+                return `${strict} (${calculated + strict})`;
+            }
         },
         quantity(array) {
-            let answer = 0;
+            let strict = 0;
+            let calculated = 0;
+
             array.forEach((obj) => {
-                if(obj.total != 0 && obj.averagePrice != 0) {
-                    answer += obj.total / obj.averagePrice;
+                if (obj.total != 0 && obj.averagePrice != 0) {
+                    calculated += obj.total / obj.averagePrice;
                 } else {
-                    answer += obj.quantity;
+                    strict += obj.quantity;
                 }
             });
-            return answer;
+            if (strict == calculated + strict) {
+                return strict;
+            } else {
+                return `${strict} (${calculated + strict})`;
+            }
         },
         firstLastData(array) {
             if (array.length != 0) {
-                let first = array[0].data;
+                let first = array[0].date;
                 const lastFromArray = array.length - 1;
-                let last = array[lastFromArray].data;
+                let last = array[lastFromArray].date;
                 return first + " / " + last;
             } else {
                 return "Čia matysite informacija kai pridėsite įrašus";
             }
         },
         averagePrice(array) {
-            if (array != "") {
-                let number = 0;
-                let splitter = 0;
-                array.forEach((obj) => {
-                    if(obj.averagePrice != 0) {
-                        number += obj.averagePrice;
-                        splitter += 1;
-                    } 
-                    else if(obj.total != 0 && obj.quantity != 0) {
-                        number += obj.total / obj.quantity;
-                        splitter += 1;
-                    }
-                });
-                let answer = number / splitter;
-                return answer.toFixed(2);
+            let strict = 0;
+            let strictSplitter = 0;
+            let calculated = 0;
+            let calculatedSplitter = 0;
+            array.forEach((obj) => {
+                if (obj.averagePrice == 0 && obj.quantity == 0) {
+                    strict += 0;
+                    strictSplitter += 1;
+                }
+                else if (obj.averagePrice != 0) {
+                    strict += obj.averagePrice;
+                    strictSplitter += 1;  
+                } else if (obj.total != 0 && obj.quantity != 0 && obj.averagePrice == 0) {
+                    calculated += obj.total / obj.quantity;
+                    calculatedSplitter += 1;
+                }
+            });
+            let strictAnswer = strict / strictSplitter;
+            let calculatedAnswer = calculated / calculatedSplitter;
+            let strictCalculated = (strictAnswer + calculatedAnswer) / 2;
+
+            if (strictSplitter == 0) {
+                return `(${calculatedAnswer.toFixed(2)})`;
+            } else if (calculatedSplitter == 0) {
+                return `${strictAnswer.toFixed(2)}`
             } else {
-                return 0;
+                return `${strictAnswer} (${strictCalculated.toFixed(2)})`;
             }
         },
         deleteItem() {
@@ -331,7 +311,7 @@ export default {
                     console.error("Error removing document: ", error);
                 });
         },
-        deleteRecordsItem(id) {
+        deleteRecordsItem(recordId) {
             firebase
                 .firestore()
                 .collection("users")
@@ -339,11 +319,11 @@ export default {
                 .collection(this.$route.params.type)
                 .doc(this.$route.params.id)
                 .collection("records")
-                .doc(id)
+                .doc(recordId)
                 .delete()
                 .then(() => {
                     this.records = this.records.filter(
-                        (record) => record.id !== id
+                        (record) => record.id !== recordId
                     );
                     this.deleteProductRecord = false;
                     console.log("Document successfully deleted!");
@@ -384,33 +364,6 @@ export default {
                     title: doc.data().title,
                     comment: doc.data().comment,
                 };
-
-                // doc.records.forEach((record) => {
-                //     this.records.push({
-                //         date: record.data().date,
-                //         quantity: record.data().quantity,
-                //         total: record.data().total,
-                //     })
-                // })
-                // firebase
-                //     .firestore()
-                //     .collection(this.$route.params.type)
-                //     .doc(this.$route.params.id)
-                //     .collection("records")
-                //     .get()
-                //     .then((doc) => {
-                //         doc.docs.forEach((prod) => {
-                //             this.records.push({
-                //                 id: prod.id,
-                //                 kiekis: Number(prod.data().kiekis),
-                //                 kaina: Number(prod.data().kaina),
-                //                 data: prod.data().data,
-                //             });
-                //         });
-                //         this.records.sort((a, b) => {
-                //             return new Date(a.data) - new Date(b.data);
-                //         });
-                //     });
             });
         firebase
             .firestore()
