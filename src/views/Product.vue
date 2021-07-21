@@ -152,21 +152,21 @@
                     </div>
                     <div class="line"></div>
                     <div
-                        class="is-hoverable"
+                        class=""
                         v-for="list in records"
                         :key="list.id" 
                     >
-                        <div class="columns has-text-centered is-hoverable is-mobile mt-1" 
+                        <div class="columns hover has-text-centered is-mobile mt-1" 
                             @click="(deleteProductRecord = true,
                              deleteId = list.id)">
                             <div class="column " >
-                                <h5>{{ `${list.total} €`}}</h5>
+                                <h5>{{ list.calculatedTotal > 0 ? `${list.total} (${list.calculatedTotal}) €`  : `${list.total} €`}}</h5>
                             </div>
                             <div class="column ">
-                                <h5>{{ list.quantity }}</h5>
+                                <h5>{{ list.calculatedQuantity > 0 ? `${list.quantity} (${list.calculatedQuantity}) €`  : `${list.quantity} €`}}</h5>
                             </div>
                             <div class="column ">
-                                <h5>{{ `${list.averagePrice} €` }}</h5>
+                                <h5>{{ list.calculatedPrice > 0 ? `${list.averagePrice} (${list.calculatedPrice}) €` : `${list.averagePrice} €`}}</h5>
                             </div>
                             <div class="column ">
                                 <h5>{{ list.date }}</h5>
@@ -175,8 +175,9 @@
                         <div class="modal"
                         :class="{ 'is-active' : deleteProductRecord }">
                             <div class="modal-background" @click="deleteProductRecord = false"></div>
-                            <div class="modal-content box">
-                                <p class="mb-2">Ar norite ištrinti šį įraša?</p>
+                            <div class="modal-content center box">
+                                <p class="mb-4 mt-3">Ar norite ištrinti šį įraša?</p>
+                                <div>
                                 <button
                                     class="button is-primary is-rounded"
                                     @click="deleteRecordsItem(deleteId)"
@@ -184,11 +185,12 @@
                                 Taip
                                 </button>
                                 <button
-                                    class="button is-primary is-outlined is-rounded"
+                                    class="button is-primary is-outlined is-rounded ml-2"
                                     @click="deleteProductRecord = false"
                                 >
                                     Ne
                                 </button>
+                                </div>
                             </div>
                             <button 
                                 class="modal-close is-large" 
@@ -206,6 +208,7 @@
 <script>
 import firebase from "firebase/app";
 import "firebase/auth";
+import 'firebase/functions';
 import "firebase/firestore";
 export default {
     name: "product",
@@ -224,6 +227,7 @@ export default {
         total(array) {
             let strict = 0;
             let calculated = 0;
+            
 
             array.forEach((obj) => {
                 if (obj.averagePrice != 0 && obj.quantity != 0) {
@@ -232,15 +236,17 @@ export default {
                     strict += obj.total;
                 }
             });
+            let strictCalc = strict + calculated;
             if (strict == calculated + strict) {
-                return strict;
+                return strict.toFixed(2);
             } else {
-                return `${strict} (${calculated + strict})`;
+                return `${strict.toFixed(2)} (${strictCalc.toFixed(2)})`;
             }
         },
         quantity(array) {
             let strict = 0;
             let calculated = 0;
+            let strictCalc = strict + calculated;
 
             array.forEach((obj) => {
                 if (obj.total != 0 && obj.averagePrice != 0) {
@@ -250,9 +256,9 @@ export default {
                 }
             });
             if (strict == calculated + strict) {
-                return strict;
+                return strict.toFixed(2);
             } else {
-                return `${strict} (${calculated + strict})`;
+                return `${strict.toFixed(2)} (${strictCalc.toFixed(2)})`;
             }
         },
         firstLastData(array) {
@@ -292,24 +298,42 @@ export default {
             } else if (calculatedSplitter == 0) {
                 return `${strictAnswer.toFixed(2)}`
             } else {
-                return `${strictAnswer} (${strictCalculated.toFixed(2)})`;
+                return `${strictAnswer.toFixed(2)} (${strictCalculated.toFixed(2)})`;
             }
         },
         deleteItem() {
-            firebase
-                .firestore()
-                .collection("users")
-                .doc(this.user)
-                .collection(this.$route.params.type)
-                .doc(this.$route.params.id)
-                .delete()
-                .then(() => {
-                    this.$router.push("/finance");
-                    console.log("Document successfully deleted!");
+            let path = this.$route.params.path;
+            let deleteFn = firebase.functions().httpsCallable('recursiveDelete');
+            deleteFn({ path: path })
+                .then(function(result) {
+                    console.log('Delete success: ' + JSON.stringify(result));
                 })
-                .catch((error) => {
-                    console.error("Error removing document: ", error);
+                .catch(function(err) {
+                    console.log('Delete failed, see console,');
+                    console.warn(err);
                 });
+            // firebase
+            //     .firestore()
+            //     .collection("users")
+            //     .doc(this.user)
+            //     .collection(this.$route.params.type)
+            //     .doc(this.$route.params.id)
+            //     .collection("records")
+            //     .delete()
+            // firebase
+            //     .firestore()
+            //     .collection("users")
+            //     .doc(this.user)
+            //     .collection(this.$route.params.type)
+            //     .doc(this.$route.params.id)
+            //     .delete()
+            //     .then(() => {
+            //         this.$router.push("/finance");
+            //         console.log("Document successfully deleted!");
+            //     })
+            //     .catch((error) => {
+            //         console.error("Error removing document: ", error);
+            //     });
         },
         deleteRecordsItem(recordId) {
             firebase
@@ -381,6 +405,10 @@ export default {
                         averagePrice: Number(record.data().averagePrice),
                         quantity: Number(record.data().quantity),
                         total: Number(record.data().total),
+                        calculatedTotal: record.data().calculatedTotal,
+                        calculatedQuantity: record.data().calculatedQuantity,
+                        calculatedPrice: record.data().calculatedPrice,
+
                     })
                 })
                 this.records.sort((a, b) => {
@@ -395,8 +423,12 @@ export default {
 .line {
     border: 1px solid rgb(197, 197, 197);
 }
+.hover:hover {
+    background-color: #eee;
+}
 .center {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
