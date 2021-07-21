@@ -109,7 +109,7 @@ export default {
     },
     methods: {
         add() {
-            // if (this.title.length > 1 && this.type != '') {
+            if (this.title.length > 1 && this.type != '') {
                 this.loading = true;
                 firebase
                     .firestore()
@@ -120,6 +120,9 @@ export default {
                         title: this.title,
                         comment: this.comment,
                         type: this.radioType,
+                        totalSum: 0,
+                        totalQuantity: 0,
+                        totalAveraged: 0,
                     })
                     .then((doc) => {
                         this.$router.push(`/users/${this.user}/${this.radioType}/${doc.id}`);
@@ -130,11 +133,11 @@ export default {
                             (this.type = "is-danger"),
                             (this.Message = `Įvyko klaida: ${error.message}`);
                     });
-            // } else {
-            //     this.notification = true,
-            //     this.type = "is-danger",
-            //     this.Message = 'Įveskite pavadinima ir kategorija.' 
-            // }
+            } else {
+                this.notification = true,
+                this.type = "is-danger",
+                this.Message = 'Įveskite pavadinima ir kategorija.' 
+            }
         },
     },
 };

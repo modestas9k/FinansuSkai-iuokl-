@@ -21,17 +21,17 @@
                     <div
                         class="columns has-text-centered is-vcentered is-mobile mb-0 mt-1"
                     >
-                        <div class="column border">
+                        <div class="column border-bottom">
                             <h5 class="has-text-weight-bold ">
                                 Produktas
                             </h5>
                         </div>
-                        <div class="column border">
+                        <div class="column border-bottom">
                             <h5 class="has-text-weight-bold">
                                 Suma
                             </h5>
                         </div>
-                        <div class="column border">
+                        <div class="column border-bottom">
                             <h5 class="has-text-weight-bold">
                                 Kiekis
                             </h5>
@@ -89,15 +89,15 @@
                     <div
                         class="columns has-text-centered is-vcentered is-mobile mb-0 mt-1"
                     >
-                        <div class="column border">
+                        <div class="column border-bottom">
                             <h5 class="has-text-weight-bold ">
                                 Produktas
                             </h5>
                         </div>
-                        <div class="column border">
+                        <div class="column border-bottom">
                             <h5 class="has-text-weight-bold">Suma</h5>
                         </div>
-                        <div class="column border">
+                        <div class="column border-bottom">
                             <h5 class="has-text-weight-bold">
                                 Kiekis
                             </h5>
@@ -336,9 +336,8 @@ export default {
     font-size: small;
     font-weight: 900;
 }
-.border {
+.border-bottom {
     border-bottom: 2px solid rgb(197, 197, 197);
-    border-top: 2px solid rgb(197, 197, 197);
 }
 .border-top {
     border-top: 2px solid rgb(197, 197, 197);
