@@ -108,7 +108,9 @@ export default {
             total: "",
             quantity: "",
             averagePrice: "",
-            select: "one",
+            calculatedTotal: 0,
+            calculatedQuantity: 0,
+            calculatedPrice: 0,
             date: `${year}-${month}-${date}`,
             notification: false,
             Message: "",
@@ -120,6 +122,14 @@ export default {
     methods: {
         add() {
             this.loading = true;
+
+            if (this.total && this.quantity && !this.averagePrice) {
+                this.calculatedPrice = this.total / this.quantity;
+            } else if (this.total && this.averagePrice && !this.quantity) {
+                this.calculatedQuantity = this.total / this.averagePrice;
+            } else if (this.quantity && this.averagePrice && !this.total) {
+                this.calculatedTotal = this.quantity * this.averagePrice;
+            }
 
             if(this.total && this.date || 
             this.total && this.averagePrice && this.date ||
@@ -136,6 +146,9 @@ export default {
                         quantity: this.quantity,
                         averagePrice: this.averagePrice,
                         date: this.date,
+                        calculatedTotal: this.calculatedTotal,
+                        calculatedQuantity: this.calculatedQuantity,
+                        calculatedPrice: this.calculatedPrice,
                     })
                     .then(() => {
                         (this.loading = false),
