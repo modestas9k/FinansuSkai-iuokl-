@@ -12,15 +12,15 @@
                     />
 
                     <div class="field">
-                        <label class="label" for="pavadinimas">
+                        <label class="label" for="title">
                             Pavadinimas
                         </label>
                         <div class="control">
                             <input
                                 class="input"
                                 type="text"
-                                id="pavadinimas"
-                                v-model="pavadinimas"
+                                id="title"
+                                v-model="title"
                                 placeholder="Sritis arba produktas"
                                 required
                             />
@@ -33,8 +33,8 @@
                                 <input
                                     type="radio"
                                     name="answer"
-                                    value="pajamos"
-                                    v-model="type"
+                                    value="income"
+                                    v-model="radioType"
                                 />
                                 Pajamos
                             </label>
@@ -42,21 +42,21 @@
                                 <input
                                     type="radio"
                                     name="answer"
-                                    value="islaidos"
-                                    v-model="type"
+                                    value="cost"
+                                    v-model="radioType"
                                 />
                                 Išlaidos
                             </label>
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label" for="komentaras">Komentaras</label>
+                        <label class="label" for="comment">Komentaras</label>
                         <div class="control">
                             <textarea
                                 class="input"
-                                v-model="komentaras"
+                                v-model="comment"
                                 type="text"
-                                id="komentaras"
+                                id="comment"
                                 placeholder="Čia galima pasirašyti sau komentara"
                             />
                         </div>
@@ -97,36 +97,47 @@ export default {
     components: { Notification },
     data() {
         return {
-            pavadinimas: "",
-            komentaras: "",
-            user: firebase.auth().uid,
+            title: "",
+            comment: "",
+            user: firebase.auth().currentUser.uid,
             notification: false,
             Message: "",
             loading: false,
             type: "",
+            radioType: "",
         };
     },
     methods: {
         add() {
-            this.loading = true;
-            firebase
-                .firestore()
-                .collection(this.type)
-                .add({
-                    pavadinimas: this.pavadinimas,
-                    komentaras: this.komentaras,
-                    uid: firebase.auth().currentUser.uid,
-                    type: this.type,
-                })
-                .then((doc) => {
-                    this.$router.push(`/product/${this.type}/${doc.id}`);
-                })
-                .catch((error) => {
-                    (this.loading = false),
-                        (this.notification = true),
-                        (this.type = "is-danger"),
-                        (this.Message = `Įvyko klaida: ${error.message}`);
-                });
+            if (this.title.length > 1 && this.type != '') {
+                this.loading = true;
+                firebase
+                    .firestore()
+                    .collection("users")
+                    .doc(this.user)
+                    .collection(this.radioType)
+                    .add({
+                        title: this.title,
+                        comment: this.comment,
+                        type: this.radioType,
+                        totalSum: 0,
+                        totalQuantity: 0,
+                        totalAveraged: 0,
+                    })
+                    .then((doc) => {
+                        this.$router.push(`/users/${this.user}/${this.radioType}/${doc.id}`);
+                    })
+                    .catch((error) => {
+                        (this.loading = false),
+                            (this.notification = true),
+                            (this.type = "is-danger"),
+                            (this.Message = `Įvyko klaida: ${error.message}`);
+                    });
+            } else {
+                this.notification = true,
+                this.type = "is-danger",
+                this.Message = 'Įveskite pavadinima ir kategorija.' 
+            }
         },
     },
 };

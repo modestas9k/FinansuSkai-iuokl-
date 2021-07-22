@@ -8,7 +8,7 @@
                         <div class="buttons">
                             <router-link
                                 :to="
-                                    `/product/${this.$route.params.type}/${produktas.id}/add`
+                                    `/users/${this.user}/${this.$route.params.type}/${this.product.id}/add`
                                 "
                                 class="button is-primary is-rounded"
                             >
@@ -35,13 +35,12 @@
                 </div>
 
                 <div class="box">
-                    <h1 class="title ">
-                        {{ this.produktas.pavadinimas }}
+                    <h1 class="subtitle has-text-weight-bold">
+                        {{ this.product.title }}
                     </h1>
-                    <p class="subtitle ">
-                        {{ `${firstLastData(irasai)}` }}
+                    <p class="">
+                        {{ `${firstLastData(records)}` }}
                     </p>
-                    <div class="line"></div>
                     <div
                         class="columns is-vcentered has-text-centered is-mobile mb-0 mt-1"
                     >
@@ -62,18 +61,18 @@
                     <div class="line"></div>
                     <div class="columns is-mobile has-text-centered mb-1 mt-1">
                         <div class="column">
-                            <h5 class="subtitle has-text-weight-bold">
-                                {{ `${suma(irasai)} €` }}
+                            <h5 class="subproduct has-text-weight-bold">
+                                {{ `${total(records)} €` }}
                             </h5>
                         </div>
                         <div class="column">
-                            <h5 class="subtitle has-text-weight-bold">
-                                {{ `${kiekis(irasai)}` }}
+                            <h5 class="subproduct has-text-weight-bold">
+                                {{ `${quantity(records)}` }}
                             </h5>
                         </div>
                         <div class="column">
-                            <h5 class="subtitle has-text-weight-bold">
-                                {{ `${vidurkis(irasai)} €` }}
+                            <h5 class="subproduct has-text-weight-bold">
+                                {{ `${averagePrice(records)} €` }}
                             </h5>
                         </div>
                     </div>
@@ -95,7 +94,7 @@
                             </h5>
                         </header>
                         <div class="">
-                            <h5>{{ produktas.komentaras }}</h5>
+                            <h5>{{ product.comment }}</h5>
                         </div>
                         <div
                             class="modal"
@@ -104,7 +103,7 @@
                             <div class="modal-background"></div>
                             <div class="modal-card">
                                 <header class="modal-card-head">
-                                    <p class="modal-card-title">Užrašai</p>
+                                    <p class="modal-card-product">Užrašai</p>
                                     <button
                                         class="delete"
                                         aria-label="close"
@@ -113,7 +112,7 @@
                                 </header>
                                 <section class="modal-card-body">
                                     <textarea
-                                        v-model="produktas.komentaras"
+                                        v-model="product.comment"
                                         class="textarea"
                                     ></textarea>
                                 </section>
@@ -136,9 +135,11 @@
                     </div>
                 </div>
                 <div class="box">
-                    <h2 class="title">Istorija</h2>
-                    <div class="line"></div>
+                    <h2 class="subtitle has-text-weight-bold">Istorija</h2>
                     <div class="columns has-text-centered is-mobile mt-1 mb-0">
+                        <div class="column">
+                            <h5 class="has-text-weight-bold">Suma</h5>
+                        </div>
                         <div class="column">
                             <h5 class="has-text-weight-bold">Kiekis</h5>
                         </div>
@@ -148,31 +149,53 @@
                         <div class="column">
                             <h5 class="has-text-weight-bold">Data</h5>
                         </div>
-                        <div class="column is-2"></div>
                     </div>
                     <div class="line"></div>
                     <div
-                        class="columns has-text-centered is-mobile mt-1"
-                        v-for="list in irasai"
-                        :key="list.id"
+                        class=""
+                        v-for="list in records"
+                        :key="list.id" 
                     >
-                        <div class="column ">
-                            <h5>{{ list.kiekis }}</h5>
+                        <div class="columns hover has-text-centered is-mobile mt-1" 
+                            @click="(deleteProductRecord = true,
+                             deleteId = list.id)">
+                            <div class="column " >
+                                <h5>{{ list.calculatedTotal > 0 ? `${list.total} (${list.calculatedTotal}) €`  : `${list.total} €`}}</h5>
+                            </div>
+                            <div class="column ">
+                                <h5>{{ list.calculatedQuantity > 0 ? `${list.quantity} (${list.calculatedQuantity}) €`  : `${list.quantity} €`}}</h5>
+                            </div>
+                            <div class="column ">
+                                <h5>{{ list.calculatedPrice > 0 ? `${list.averagePrice} (${list.calculatedPrice}) €` : `${list.averagePrice} €`}}</h5>
+                            </div>
+                            <div class="column ">
+                                <h5>{{ list.date }}</h5>
+                            </div>
                         </div>
-                        <div class="column ">
-                            <h5>{{ `${list.kaina} €` }}</h5>
-                        </div>
-                        <div class="column ">
-                            <h5>{{ list.data }}</h5>
-                        </div>
-                        <div class="column is-2">
-                            <button
-                                class="button is-danger rounded"
-                                v-on:click="deleteStoryItem(list.id)"
-                            >
-                                <span class="icon">
-                                    <i class="zmdi zmdi-close"></i>
-                                </span>
+                        <div class="modal"
+                        :class="{ 'is-active' : deleteProductRecord }">
+                            <div class="modal-background" @click="deleteProductRecord = false"></div>
+                            <div class="modal-content center box">
+                                <p class="mb-4 mt-3">Ar norite ištrinti šį įraša?</p>
+                                <div>
+                                <button
+                                    class="button is-primary is-rounded"
+                                    @click="deleteRecordsItem(deleteId)"
+                                >
+                                Taip
+                                </button>
+                                <button
+                                    class="button is-primary is-outlined is-rounded ml-2"
+                                    @click="deleteProductRecord = false"
+                                >
+                                    Ne
+                                </button>
+                                </div>
+                            </div>
+                            <button 
+                                class="modal-close is-large" 
+                                aria-label="close" 
+                                @click="deleteProductRecord = false">
                             </button>
                         </div>
                     </div>
@@ -184,82 +207,149 @@
 
 <script>
 import firebase from "firebase/app";
+import "firebase/auth";
+import 'firebase/functions';
 import "firebase/firestore";
 export default {
     name: "product",
 
     data() {
         return {
-            produktas: {},
-            irasai: [],
+            product: {},
+            records: [],
             showModal: false,
+            deleteProductRecord: false,
+            deleteId : '',
+            user: firebase.auth().currentUser.uid,
         };
     },
     methods: {
-        suma(array) {
-            let answer = 0;
+        total(array) {
+            let strict = 0;
+            let calculated = 0;
+            
+
             array.forEach((obj) => {
-                answer += obj.kiekis * obj.kaina;
+                if (obj.averagePrice != 0 && obj.quantity != 0) {
+                    calculated += obj.quantity * obj.averagePrice;
+                } else {
+                    strict += obj.total;
+                }
             });
-            return answer;
+            let strictCalc = strict + calculated;
+            if (strict == calculated + strict) {
+                return strict.toFixed(2);
+            } else {
+                return `${strict.toFixed(2)} (${strictCalc.toFixed(2)})`;
+            }
         },
-        kiekis(array) {
-            let answer = 0;
+        quantity(array) {
+            let strict = 0;
+            let calculated = 0;
+            let strictCalc = strict + calculated;
+
             array.forEach((obj) => {
-                answer += obj.kiekis;
+                if (obj.total != 0 && obj.averagePrice != 0) {
+                    calculated += obj.total / obj.averagePrice;
+                } else {
+                    strict += obj.quantity;
+                }
             });
-            return answer;
+            if (strict == calculated + strict) {
+                return strict.toFixed(2);
+            } else {
+                return `${strict.toFixed(2)} (${strictCalc.toFixed(2)})`;
+            }
         },
         firstLastData(array) {
             if (array.length != 0) {
-                let first = array[0].data;
-                const lastfromArray = array.length - 1;
-                let last = array[lastfromArray].data;
+                let first = array[0].date;
+                const lastFromArray = array.length - 1;
+                let last = array[lastFromArray].date;
                 return first + " / " + last;
             } else {
                 return "Čia matysite informacija kai pridėsite įrašus";
             }
         },
-        vidurkis(array) {
-            if (array != "") {
-                let number = 0;
-                let spliter = 0;
-                array.forEach((obj) => {
-                    number += obj.kaina;
-                    spliter += 1;
-                });
-                let answer = number / spliter;
-                return answer.toFixed(2);
+        averagePrice(array) {
+            let strict = 0;
+            let strictSplitter = 0;
+            let calculated = 0;
+            let calculatedSplitter = 0;
+            array.forEach((obj) => {
+                if (obj.averagePrice == 0 && obj.quantity == 0) {
+                    strict += 0;
+                    strictSplitter += 1;
+                }
+                else if (obj.averagePrice != 0) {
+                    strict += obj.averagePrice;
+                    strictSplitter += 1;  
+                } else if (obj.total != 0 && obj.quantity != 0 && obj.averagePrice == 0) {
+                    calculated += obj.total / obj.quantity;
+                    calculatedSplitter += 1;
+                }
+            });
+            let strictAnswer = strict / strictSplitter;
+            let calculatedAnswer = calculated / calculatedSplitter;
+            let strictCalculated = (strictAnswer + calculatedAnswer) / 2;
+
+            if (strictSplitter == 0) {
+                return `(${calculatedAnswer.toFixed(2)})`;
+            } else if (calculatedSplitter == 0) {
+                return `${strictAnswer.toFixed(2)}`
             } else {
-                return 0;
+                return `${strictAnswer.toFixed(2)} (${strictCalculated.toFixed(2)})`;
             }
         },
         deleteItem() {
-            firebase
-                .firestore()
-                .collection(this.$route.params.type)
-                .doc(this.$route.params.id)
-                .delete()
-                .then(() => {
-                    this.$router.push("/finance");
-                    console.log("Document successfully deleted!");
+            let path = this.$route.params.path;
+            let deleteFn = firebase.functions().httpsCallable('recursiveDelete');
+            deleteFn({ path: path })
+                .then(function(result) {
+                    console.log('Delete success: ' + JSON.stringify(result));
                 })
-                .catch((error) => {
-                    console.error("Error removing document: ", error);
+                .catch(function(err) {
+                    console.log('Delete failed, see console,');
+                    console.warn(err);
                 });
+            // firebase
+            //     .firestore()
+            //     .collection("users")
+            //     .doc(this.user)
+            //     .collection(this.$route.params.type)
+            //     .doc(this.$route.params.id)
+            //     .collection("records")
+            //     .delete()
+            // firebase
+            //     .firestore()
+            //     .collection("users")
+            //     .doc(this.user)
+            //     .collection(this.$route.params.type)
+            //     .doc(this.$route.params.id)
+            //     .delete()
+            //     .then(() => {
+            //         this.$router.push("/finance");
+            //         console.log("Document successfully deleted!");
+            //     })
+            //     .catch((error) => {
+            //         console.error("Error removing document: ", error);
+            //     });
         },
-        deleteStoryItem(id) {
+        deleteRecordsItem(recordId) {
             firebase
                 .firestore()
+                .collection("users")
+                .doc(this.user)
                 .collection(this.$route.params.type)
                 .doc(this.$route.params.id)
-                .collection("irasai")
-                .doc(id)
+                .collection("records")
+                .doc(recordId)
                 .delete()
                 .then(() => {
-                    this.irasai = this.irasai.filter(
-                        (irasas) => irasas.id !== id
+                    this.records = this.records.filter(
+                        (record) => record.id !== recordId
                     );
+                    this.deleteProductRecord = false;
                     console.log("Document successfully deleted!");
                 })
                 .catch((error) => {
@@ -269,10 +359,12 @@ export default {
         update() {
             firebase
                 .firestore()
+                .collection("users")
+                .doc(this.user)
                 .collection(this.$route.params.type)
                 .doc(this.$route.params.id)
                 .update({
-                    komentaras: this.produktas.komentaras,
+                    comment: this.product.comment,
                 })
                 .then(() => {
                     this.showModal = false;
@@ -285,36 +377,44 @@ export default {
     beforeMount() {
         firebase
             .firestore()
+            .collection("users")
+            .doc(this.user)
             .collection(this.$route.params.type)
             .doc(this.$route.params.id)
             .get()
             .then((doc) => {
-                this.produktas = {
+                this.product = {
                     id: doc.id,
-                    pavadinimas: doc.data().pavadinimas,
-                    komentaras: doc.data().komentaras,
-                    uid: doc.data().uid,
+                    title: doc.data().title,
+                    comment: doc.data().comment,
                 };
-                firebase
-                    .firestore()
-                    .collection(this.$route.params.type)
-                    .doc(this.$route.params.id)
-                    .collection("irasai")
-                    .get()
-                    .then((doc) => {
-                        doc.docs.forEach((prod) => {
-                            this.irasai.push({
-                                id: prod.id,
-                                kiekis: Number(prod.data().kiekis),
-                                kaina: Number(prod.data().kaina),
-                                data: prod.data().data,
-                            });
-                        });
-                        this.irasai.sort((a, b) => {
-                            return new Date(a.data) - new Date(b.data);
-                        });
-                    });
             });
+        firebase
+            .firestore()
+            .collection("users")
+            .doc(this.user)
+            .collection(this.$route.params.type)
+            .doc(this.$route.params.id)
+            .collection("records")
+            .get()
+            .then((doc) => {
+                doc.forEach((record) => {
+                    this.records.push({
+                        id: record.id,
+                        date: record.data().date,
+                        averagePrice: Number(record.data().averagePrice),
+                        quantity: Number(record.data().quantity),
+                        total: Number(record.data().total),
+                        calculatedTotal: record.data().calculatedTotal,
+                        calculatedQuantity: record.data().calculatedQuantity,
+                        calculatedPrice: record.data().calculatedPrice,
+
+                    })
+                })
+                this.records.sort((a, b) => {
+                    return new Date(a.data) - new Date(b.data);
+                });
+            })
     },
 };
 </script>
@@ -323,8 +423,12 @@ export default {
 .line {
     border: 1px solid rgb(197, 197, 197);
 }
+.hover:hover {
+    background-color: #eee;
+}
 .center {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
